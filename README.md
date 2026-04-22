@@ -9,14 +9,22 @@
 
 Companion code for the IEEE Access paper
 
-> **B. S. Guevara, L. F. Simancas, T. Nascimento**,
+> **Bryan S. Guevara, José Varela-Aldás**,
 > *"Point-Mass Planning and NMPC Tracking for Time-Optimal Agile Quadrotor Gate Navigation"*,
-> LASER/UFPB + INAUT/UNSJ, 2026.
+> Centro de Investigación MIST, Facultad de Ingenierías,
+> Universidad Tecnológica Indoamérica, Ambato, Ecuador, 2026.
 
 This repository contains the **full pipeline** (planner → flatness bridge →
 two NMPC formulations → MuJoCo evaluation) used in the paper, plus the LaTeX
 source, the reference animations, and instructions to reproduce every figure
 and table from scratch.
+
+<p align="center">
+  <img src="path_planing/animate_flatness_ref_fig8.gif" width="48%" alt="Figure-8 circuit — flatness reference"/>
+  &nbsp;
+  <img src="path_planing/animate_flatness_ref_loop.gif" width="48%" alt="Vertical-loop circuit — flatness reference"/>
+</p>
+<p align="center"><sub><b>Figure-8</b> (left) and <b>vertical loop</b> (right) differential-flatness references tracked by the NMPC.</sub></p>
 
 ---
 
@@ -354,7 +362,7 @@ PMM envelope is set at the top of `path_planing/path_time_3D_PMM.py`
 
 ```bibtex
 @article{guevara2026pmmnmpc,
-  author  = {Guevara, Bryan S. and Simancas, Luis F. and Nascimento, Tiago},
+  author  = {Guevara, Bryan S. and Varela-Ald{\'a}s, Jos{\'e}},
   title   = {Point-Mass Planning and {NMPC} Tracking for Time-Optimal Agile
              Quadrotor Gate Navigation},
   journal = {IEEE Access},
@@ -386,5 +394,7 @@ communities, to whom we are indebted.
 - MuJoCo — https://mujoco.org/
 - HPIPM  — https://github.com/giaf/hpipm
 
-Contact: `bryansgue@gmail.com` · LASER lab, UFPB (Brazil) · INAUT, UNSJ (Argentina).
+Contact: `bryansgue@gmail.com` · Corresponding author: José Varela-Aldás
+(`josevarela@uti.edu.ec`) · Centro de Investigación MIST, Universidad
+Tecnológica Indoamérica, Ambato, Ecuador.
 # Time_optimal_planing-NMPC
