@@ -1,0 +1,148 @@
+<mujoco model="two_drones">
+
+  <compiler angle="radian" autolimits="true"/>
+
+  <!--
+    Two body-rate quadrotors for pursuit-evasion wargame.
+    Physics:  forces/torques applied via xfrc_applied in Python.
+    Gravity is handled by MuJoCo (option gravity).
+    No MuJoCo actuators needed — control is injected externally.
+
+    Body layout (for qpos / qvel indexing):
+      Evader  (id 0): qpos[0:7]  = [px,py,pz, qw,qx,qy,qz]
+                      qvel[0:6]  = [vx,vy,vz, wx,wy,wz]
+      Pursuer (id 1): qpos[7:14]
+                      qvel[6:12]
+
+    Collision geometry:
+      Each drone has a bounding sphere (radius 0.25 m) used for
+      contact detection.  A contact event means the safety constraint
+      d >= d_min was violated.
+  -->
+
+  <option gravity="0 0 -9.81" timestep="0.002" integrator="RK4"
+          cone="pyramidal" noslip_iterations="0"/>
+
+  <visual>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global fovy="60" linewidth="2"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient"
+             rgb1="0.53 0.70 0.92" rgb2="0.12 0.18 0.30"
+             width="512" height="512"/>
+    <texture name="grid" type="2d" builtin="checker"
+             rgb1="0.55 0.55 0.55" rgb2="0.45 0.45 0.45"
+             width="512" height="512" mark="edge" markrgb="0.3 0.3 0.3"/>
+    <material name="grid"    texture="grid" texrepeat="6 6" reflectance="0.1"/>
+    <material name="m_evader"  rgba="0.20 0.50 1.00 1.0"/>
+    <material name="m_pursuer" rgba="1.00 0.25 0.15 1.0"/>
+    <material name="m_arm"     rgba="0.25 0.25 0.25 0.9"/>
+  </asset>
+
+  <worldbody>
+
+    <!-- Lighting -->
+    <light name="sun" pos="0 0 8" dir="0 0 -1"
+           diffuse="0.9 0.9 0.9" specular="0.2 0.2 0.2" castshadow="true"/>
+    <light name="fill" pos="5 -5 4" dir="-1 1 -1"
+           diffuse="0.4 0.4 0.4" specular="0 0 0" castshadow="false"/>
+
+    <!-- Ground (visual only, no contact with drones) -->
+    <geom name="ground" type="plane" size="12 12 0.1"
+          material="grid" contype="0" conaffinity="0" rgba="1 1 1 0.3"/>
+
+    <!-- Workspace sphere boundary marker (visual wireframe) -->
+    <!-- Sphere at [0, 0, 1.5] radius 4.0 m -->
+
+    <!-- ══════════════════════════════════════════════════════
+         EVADER  (drone 0)   — blue
+         ════════════════════════════════════════════════════ -->
+    <body name="evader" pos="0 0 1.5">
+      <freejoint name="evader_joint"/>
+
+      <inertial mass="1.08" pos="0 0 0"
+                diaginertia="0.010 0.010 0.018"/>
+
+      <!-- Central frame (box) -->
+      <geom name="evader_frame" type="box" size="0.08 0.08 0.025"
+            material="m_evader" contype="1" conaffinity="1"/>
+
+      <!-- Arms (X-configuration) -->
+      <geom type="capsule" size="0.012"
+            fromto="-0.14 -0.14 0  0.14 0.14 0"
+            rgba="0.15 0.40 0.85 0.9" contype="0" conaffinity="0"/>
+      <geom type="capsule" size="0.012"
+            fromto=" 0.14 -0.14 0 -0.14 0.14 0"
+            rgba="0.15 0.40 0.85 0.9" contype="0" conaffinity="0"/>
+
+      <!-- Motor discs (visual only) -->
+      <geom type="cylinder" size="0.045 0.005" pos=" 0.14  0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos="-0.14  0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos=" 0.14 -0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos="-0.14 -0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+
+      <!-- Bounding sphere for collision detection (d_min = 0.5 m → radius 0.25) -->
+      <geom name="evader_col" type="sphere" size="0.25"
+            rgba="0.2 0.5 1.0 0.05"
+            contype="1" conaffinity="1"/>
+
+    </body>
+
+    <!-- ══════════════════════════════════════════════════════
+         PURSUER (drone 1)   — red
+         ════════════════════════════════════════════════════ -->
+    <body name="pursuer" pos="3 0 1.5">
+      <freejoint name="pursuer_joint"/>
+
+      <inertial mass="1.08" pos="0 0 0"
+                diaginertia="0.010 0.010 0.018"/>
+
+      <!-- Central frame -->
+      <geom name="pursuer_frame" type="box" size="0.08 0.08 0.025"
+            material="m_pursuer" contype="1" conaffinity="1"/>
+
+      <!-- Arms -->
+      <geom type="capsule" size="0.012"
+            fromto="-0.14 -0.14 0  0.14 0.14 0"
+            rgba="0.85 0.20 0.10 0.9" contype="0" conaffinity="0"/>
+      <geom type="capsule" size="0.012"
+            fromto=" 0.14 -0.14 0 -0.14 0.14 0"
+            rgba="0.85 0.20 0.10 0.9" contype="0" conaffinity="0"/>
+
+      <!-- Motor discs -->
+      <geom type="cylinder" size="0.045 0.005" pos=" 0.14  0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos="-0.14  0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos=" 0.14 -0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+      <geom type="cylinder" size="0.045 0.005" pos="-0.14 -0.14 0.015"
+            rgba="0.05 0.05 0.05 0.9" contype="0" conaffinity="0"/>
+
+      <!-- Bounding sphere for collision detection -->
+      <geom name="pursuer_col" type="sphere" size="0.25"
+            rgba="1.0 0.25 0.15 0.05"
+            contype="1" conaffinity="1"/>
+
+    </body>
+
+  </worldbody>
+
+  <!--
+    Contact filtering:
+    - Drone-drone: evader_col ↔ pursuer_col  (ENABLED — collision oracle)
+    - Drone-ground: disabled (drones fly above ground)
+    Only geoms with matching contype & conaffinity bits generate contacts.
+  -->
+  <contact>
+    <pair geom1="evader_col" geom2="pursuer_col" condim="1"/>
+  </contact>
+
+</mujoco>
