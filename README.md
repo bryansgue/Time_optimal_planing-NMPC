@@ -33,13 +33,12 @@ and table from scratch.
 1. [What is in this repo](#1-what-is-in-this-repo)
 2. [Pipeline overview](#2-pipeline-overview)
 3. [Theory cheat-sheet](#3-theory-cheat-sheet)
-4. [Reference animations](#4-reference-animations)
-5. [Repository layout](#5-repository-layout)
-6. [Installation](#6-installation)
-7. [Reproducing the paper](#7-reproducing-the-paper)
-8. [Configuration knobs](#8-configuration-knobs)
-9. [Citing](#9-citing)
-10. [License & acknowledgements](#10-license--acknowledgements)
+4. [Repository layout](#4-repository-layout)
+5. [Installation](#5-installation)
+6. [Reproducing the paper](#6-reproducing-the-paper)
+7. [Configuration knobs](#7-configuration-knobs)
+8. [Citing](#8-citing)
+9. [License & acknowledgements](#9-license--acknowledgements)
 
 ---
 
@@ -181,35 +180,7 @@ SQP-RTI + FULL_CONDENSING_HPIPM.
 
 ---
 
-## 4. Reference animations
-
-The MATLAB script `path_planing/animate_flatness_ref.m` renders the
-differential-flatness reference (body axes, thrust vector, quaternion and
-body-rate time histories) and, with `SAVE_GIF = true`, writes an animated
-GIF next to the `.mat` files:
-
-```
-path_planing/animate_flatness_ref_fig8.gif
-path_planing/animate_flatness_ref_loop.gif
-```
-
-Steps to regenerate them:
-
-```bash
-# 1) Export the flatness reference to .mat
-cd path_planing/
-python3 export_flatness_mat.py           # → flatness_ref_fig8.mat, flatness_ref_loop.mat
-
-# 2) Open MATLAB and run, once per circuit:
-matlab -batch "CIRCUIT='fig8'; run('animate_flatness_ref.m')"
-matlab -batch "CIRCUIT='loop'; run('animate_flatness_ref.m')"
-```
-
-GIF size/speed can be tuned at the top of the script (`GIF_STEP`, `GIF_FPS`).
-
----
-
-## 5. Repository layout
+## 4. Repository layout
 
 ```
 Time_optimal_planing+NMPC/
@@ -244,7 +215,7 @@ Time_optimal_planing+NMPC/
 
 ---
 
-## 6. Installation
+## 5. Installation
 
 Tested on **Ubuntu 22.04**, Python 3.10.
 
@@ -287,7 +258,7 @@ which uses an internal RK4 integrator.
 
 ---
 
-## 7. Reproducing the paper
+## 6. Reproducing the paper
 
 ### 7.1 Plan the two circuits
 
@@ -339,7 +310,7 @@ pdflatex access && bibtex access && pdflatex access && pdflatex access
 
 ---
 
-## 8. Configuration knobs
+## 7. Configuration knobs
 
 All global parameters live in **`config/experiment_config.py`**:
 
@@ -358,7 +329,7 @@ PMM envelope is set at the top of `path_planing/path_time_3D_PMM.py`
 
 ---
 
-## 9. Citing
+## 8. Citing
 
 ```bibtex
 @article{guevara2026pmmnmpc,
@@ -381,7 +352,7 @@ PMM envelope is set at the top of `path_planing/path_time_3D_PMM.py`
 
 ---
 
-## 10. License & acknowledgements
+## 9. License & acknowledgements
 
 Code released under the **MIT License**. The paper figures and LaTeX sources
 in `ACCESS_latex/` follow the IEEE Access copyright policy.
