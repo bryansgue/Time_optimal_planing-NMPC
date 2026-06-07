@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.3.29)  6 JUN 2026 17:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.3.29)  6 JUN 2026 21:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1485,7 +1485,7 @@ fb><./t1-formata-mediumitalic.pfb><./t1-formata-regular.pfb><./t1-giovannistd-b
 ookitalic.pfb><./t1-times-bold.pfb><./t1-times-bolditalic.pfb><./t1-times-itali
 c.pfb><./t1-times.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/uc
 rr8a.pfb>
-Output written on access.pdf (10 pages, 1101464 bytes).
+Output written on access.pdf (10 pages, 1101455 bytes).
 PDF statistics:
  696 PDF objects out of 1000 (max. 8388607)
  514 compressed objects within 6 object streams
