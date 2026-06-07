@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\setlist[description]{leftmargin=1.4em,style=nextline,font=\normalfont\itshape}
+\newcommand{\concern}[1]{\par\smallskip\textbf{Concern.} #1}
+\newcommand{\response}[1]{\par\textbf{Response.} #1}
+\newcommand{\action}[1]{\par\textbf{Action.} #1\par\smallskip}
+\newcommand{\nmpc}{NMPC}
+\title{\vspace{-2.5em}Response to Reviewers}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-3em}
+
+\noindent\textbf{Manuscript \#:} Access-2026-22287\\
+\textbf{Title:} Point Mass Planning and \nmpc{} Tracking for Time-Optimal
+Agile Quadrotor Gate Navigation\\
+\textbf{Authors:} B.\ S.\ Guevara, A.\ S.\ Brand\~ao, J.\ Varela-Ald\'as
+
+\medskip
+\noindent We thank the Associate Editor and both reviewers. Both found the
+work technically sound and a contribution to the field, and we have
+addressed every comment. Changes are marked in yellow in the highlighted
+PDF; section/equation labels refer to the revised manuscript. No new
+references were added.
+
+\section*{Reviewer 1}
+The reviewer notes we identified and addressed two significant research
+gaps, and answered \emph{Yes} to contribution, technical soundness, and
+reference adequacy. We address the two suggestions below.
+
+\subsection*{Comment 1.1 --- more detailed explanation of the concepts (Q2)}
+\concern{The planner/controller description, while sufficient, could be
+more detailed.}
+\response{We added insight at the one point previously stated without
+motivation---the point-mass cost structure---as it links the planner to the
+quality of the reference passed to the tracker.}
+\action{A sentence after Eq.~(PMM cost, Sec.~III-C) now explains the three
+cost terms, in particular that the jerk regulariser ($w_j$) keeps the
+downstream flatness derivatives (attitude, body rate) well conditioned,
+since they are obtained by differentiating the planned acceleration.}
+
+\subsection*{Comment 1.2 --- criterion for the \nmpc{} parameters $N$, $f_c$ (Q3)}
+\concern{No criterion is given for selecting the \nmpc{} parameters.}
+\response{The values follow standard practice and the real-time budget, not
+a separate tuning study, which we now state. $f_c=100$~Hz is the
+conventional rate for body-rate agile \nmpc{}; $N=50$ ($T_h=0.5$~s) is the
+largest horizon keeping the P99 solve time within the 10~ms deadline on the
+test platform, and the half-second look-ahead spans roughly one inter-gate
+transit ($T_f^*/N_g\approx0.7$~s).}
+\action{Added an explanatory passage in Sec.~V-A after the parameter list,
+giving the criterion for $f_c$ and $N$/$T_h$ and linking it to the measured
+real-time budget (Sec.~V-G).}
+
+\subsection*{Remaining items}
+Questions 1, 4, and 5 were affirmative and required no action. No references
+were suggested for addition or removal.
+
+\section*{Reviewer 2}
+The reviewer found the paper ``very well written, well-founded and
+referenced'' and recommended publication after minor adjustments.
+
+\subsection*{Comment 2.1 --- discuss the contribution against similar cited works}
+\concern{Include a brief discussion positioning the proposal against
+similar cited works, highlighting its advantages.}
+\response{We agree; the paper did not consolidate this comparison in one
+place. We added it using only references already in the manuscript.}
+\action{A paragraph at the end of Sec.~V-H (Discussion) now positions the
+work: it retains the fast point-mass planning of Foehn~et~al.\ but feeds the
+\emph{complete} flat output to the \nmpc{}; it keeps planner and tracker
+modular---unlike the fused MPCC of Romero~et~al.\ and Krinner~et~al.,
+whose stages cannot be replaced independently---while recovering the
+tracking completeness those methods achieve implicitly; and, unlike
+Sun~et~al., it \emph{ablates} the reference structure to isolate which flat
+components drive gate-crossing performance, at no extra solver cost.}
+
+\subsection*{Remaining items}
+All four assessment questions were affirmative; no references were suggested
+for addition or removal.
+
+\section*{Additional corrections by the authors}
+We audited every quantitative claim against the raw result files. Tables~III
+and~IV, all reported percentages, peak speeds, and peak accelerations were
+confirmed correct. Two items were corrected:
+
+\begin{description}
+\item[AC1 --- Blow-up exclusion.] The text gave an approximate per-mode
+divergence rate. We replaced it with the exact paired-exclusion outcome:
+trials are dropped if either controller diverges ($\text{RMSE}>5$~m),
+leaving 23/25 valid trials on the figure-8 and 18/25 on the vertical loop
+(Sec.~V-D).
+\item[AC2 --- Figure~2.] The original figure had been rendered from an
+earlier planner export and the model-in-the-loop set, so its numbers did
+not match the software-in-the-loop tables. It is regenerated from exactly
+the reported data (Table~III reference; software-in-the-loop trajectories).
+\end{description}
+
+\medskip
+\noindent We believe the revision fully addresses the reviewers' comments
+and thank the reviewers and Associate Editor.
+
+\end{document}

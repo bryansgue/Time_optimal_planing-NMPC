@@ -11,6 +11,7 @@ import mpl_toolkits
 mpl_toolkits.__path__ = [p for p in ["/home/bryansgue/.local/lib/python3.10/site-packages/mpl_toolkits"] if os.path.isdir(p)] or mpl_toolkits.__path__
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import numpy as np
 from scipy.io import loadmat
 
@@ -30,13 +31,17 @@ def speed(s):
 v_all_max = float(np.ceil(max(speed(S[0]).max(), speed(S[1]).max())))
 
 titles = [
-    f"(a) Figure-8   $T_{{opt}}={float(S[0]['T_opt']):.2f}$ s,  $v_{{max}}={speed(S[0]).max():.2f}$ m/s",
-    f"(b) Vertical Loop   $T_{{opt}}={float(S[1]['T_opt']):.2f}$ s,  $v_{{max}}={speed(S[1]).max():.2f}$ m/s",
+    "(a) Figure-8",
+    "(b) Vertical Loop",
 ]
 
 m = 0.6
 fig = plt.figure(figsize=(14, 6.4))
-cmap = plt.cm.viridis
+# Truncated inferno: purple -> red -> orange (avoids blue/green/yellow
+# used by NMPC-Att/NMPC-Full curves)
+from matplotlib.colors import LinearSegmentedColormap
+cmap = LinearSegmentedColormap.from_list(
+    'inf_trunc', plt.cm.inferno(np.linspace(0.15, 0.78, 256)))
 
 for k, (s, r) in enumerate(zip(S, R)):
     ax = fig.add_subplot(1, 2, k+1, projection='3d')
@@ -54,11 +59,9 @@ for k, (s, r) in enumerate(zip(S, R)):
     yL = (all_pos_k[:,1].min()-m, all_pos_k[:,1].max()+m)
     zL = (0.0,                    all_pos_k[:,2].max()+m)
 
-    # PMM reference: coloured by speed
-    v_n = v / v_all_max
-    for i in range(len(px)-1):
-        ax.plot(px[i:i+2], py[i:i+2], pz[i:i+2],
-                color=cmap(v_n[i]), linewidth=1.6, alpha=0.55)
+    # PMM reference: thick black dashed line
+    ax.plot(px, py, pz, color='black', linestyle='--', linewidth=2.0,
+            alpha=0.9, zorder=4)
 
     # Tracked NMPC trajectories (first trial of each)
     for ctrl, col, lbl, lw in [('att',  (0.15, 0.40, 0.95), 'NMPC-Att',  1.7),
@@ -88,16 +91,18 @@ for k, (s, r) in enumerate(zip(S, R)):
     ax.view_init(elev=22, azim=-55)
     ax.set_title(titles[k], fontsize=10, fontweight='bold')
     ax.grid(True, alpha=0.3)
-    if k == 0:
-        ax.legend(loc='upper left', fontsize=8, framealpha=0.9)
 
-# Shared speed colorbar (reference colouring)
-sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(0, v_all_max))
-sm.set_array([])
-cbar_ax = fig.add_axes([0.93, 0.18, 0.014, 0.65])
-fig.colorbar(sm, cax=cbar_ax, label='PMM reference speed [m/s]')
+# Shared legend centred between the two panels
+legend_handles = [
+    Line2D([0], [0], color='black', lw=2.0, linestyle='--', label='PMM reference'),
+    Line2D([0], [0], color=(0.15, 0.40, 0.95), lw=1.8, label='NMPC-Att'),
+    Line2D([0], [0], color=(0.15, 0.75, 0.25), lw=1.8, label='NMPC-Full'),
+]
+fig.legend(handles=legend_handles, loc='upper center',
+           bbox_to_anchor=(0.47, 0.97), ncol=3, fontsize=9,
+           framealpha=0.9, columnspacing=1.8, handlelength=2.0)
 
-plt.subplots_adjust(left=0.02, right=0.91, wspace=0.06, top=0.93, bottom=0.04)
+plt.subplots_adjust(left=0.02, right=0.98, wspace=0.06, top=0.93, bottom=0.04)
 out_png = os.path.join(script, 'pmm_circuits_preview.png')
 out_pdf = os.path.join(script, '..', 'ACCESS_latex', 'figs', 'fig_pmm_circuits.pdf')
 fig.savefig(out_png, dpi=160, bbox_inches='tight')

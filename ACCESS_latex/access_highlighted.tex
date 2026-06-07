@@ -20,6 +20,14 @@
 \usepackage{cleveref}
 \usepackage{siunitx}
 \usepackage{bm}
+\usepackage{soul}
+\sethlcolor{yellow}
+\let\st\undefined % soul defines \st; free it for the paper's \st (s.t.) macro
+% Highlight macro for revised passages; \mbox-protect math/commands inside.
+\newcommand{\hlt}[1]{\hl{#1}}
+% Full-paragraph highlight (robust to math/citations); used for new paragraphs.
+\newcommand{\hlpar}[1]{\par\noindent\colorbox{yellow}{%
+  \parbox{\dimexpr\linewidth-2\fboxsep\relax}{#1}}\par}
 \makeatletter
 \AtBeginDocument{\DeclareMathVersion{bold}
 \SetSymbolFont{operators}{bold}{T1}{times}{b}{n}
@@ -443,13 +451,14 @@ to $T_f$:
 where $d_i^{\pm} = \hat{\vect{n}}_i^\top(\vect{p}_{k_i \pm 1} - \vect{g}_i)$
 enforce the correct approach direction through each
 gate~\eqref{eq:pmm_crossing}.
-The three terms in~\eqref{eq:pmm_cost} trade the final time $T_f$
-against control effort ($w_a$) and jerk smoothness ($w_j$): the jerk
-regulariser is what keeps the downstream flatness derivatives ---
-the attitude quaternion and body rate of
-Section~\ref{sec:flat_map}, obtained by differentiating the planned
-acceleration --- well conditioned, so $w_j$ couples the planner cost
-directly to the quality of the reference handed to the tracker.
+\hlt{The three terms in~\mbox{\eqref{eq:pmm_cost}} trade the final time
+\mbox{$T_f$} against control effort (\mbox{$w_a$}) and jerk smoothness
+(\mbox{$w_j$}): the jerk regulariser is what keeps the downstream
+flatness derivatives --- the attitude quaternion and body rate of
+Section~\mbox{\ref{sec:flat_map}}, obtained by differentiating the
+planned acceleration --- well conditioned, so \mbox{$w_j$} couples the
+planner cost directly to the quality of the reference handed to the
+tracker.}
 The NLP is formulated with CasADi~\cite{andersson2019casadi} and solved
 offline with IPOPT~\cite{wachter2006implementation}.
 
@@ -696,17 +705,17 @@ The \nmpc{} runs at $f_c=\SI{100}{\hertz}$ ($h=\SI{10}{\milli\second}$)
 with a prediction horizon of $N=50$ steps ($T_h=\SI{0.5}{\s}$), an
 ERK4 integrator with 10 sub-steps per control interval, and an
 SQP-RTI convergence tolerance of $\epsilon_\text{tol}=10^{-4}$.
-These values follow standard practice and the real-time budget rather
-than a separate tuning procedure: $f_c=\SI{100}{\hertz}$ is the common
-control rate for body-rate agile \nmpc{}
-\cite{hanover2021performance,verschueren2022acados}, and $N=50$
-($T_h=\SI{0.5}{\s}$) is the largest horizon for which the present
-implementation keeps the P99 solve time within the
-\SI{10}{\milli\second} deadline on the test platform
-(Section~\ref{sec:computation}); the resulting half-second look-ahead
-spans roughly one inter-gate transit
-($T_f^*/N_g\!\approx\!\SI{0.7}{\s}$), enough to anticipate the upcoming
-gate without over-extending the horizon.
+\hlt{These values follow standard practice and the real-time budget
+rather than a separate tuning procedure: \mbox{$f_c=\SI{100}{\hertz}$}
+is the common control rate for body-rate agile \mbox{\nmpc{}}
+\mbox{\cite{hanover2021performance,verschueren2022acados}}, and
+\mbox{$N=50$} (\mbox{$T_h=\SI{0.5}{\s}$}) is the largest horizon for
+which the present implementation keeps the P99 solve time within the
+\mbox{\SI{10}{\milli\second}} deadline on the test platform
+(Section~\mbox{\ref{sec:computation}}); the resulting half-second
+look-ahead spans roughly one inter-gate transit
+(\mbox{$T_f^*/N_g\!\approx\!\SI{0.7}{\s}$}), enough to anticipate the
+upcoming gate without over-extending the horizon.}
 The \mujoco{} simulation runs at $f_\text{sim}=\SI{500}{\hertz}$,
 50 times faster than the controller, so that the physics integration
 is independent of the \nmpc{} prediction model;
@@ -859,8 +868,9 @@ geometrically (Fig.~\ref{fig:pmm_circuits}(b)).
            forces an inverted body attitude ($z^*_{b,z}<0$),
            exceeding the representational range of any yaw-only
            attitude reference.
-           Black dashed line: \pmm{} reference; blue: \nmpc{}-Att;
-           green: \nmpc{}-Full; red markers: gate centres.}
+           \hlt{Black dashed line: \mbox{\pmm{}} reference; blue:
+           \mbox{\nmpc{}}-Att; green: \mbox{\nmpc{}}-Full; red markers:
+           gate centres.}}
   \label{fig:pmm_circuits}
 \end{figure*}
 
@@ -897,13 +907,14 @@ circuit against the \mujoco{} physics engine driven through ROS~2.
 Stochasticity arises from the randomly seeded external-force
 disturbance that MuJoCo re-draws at every scene reset, so each of
 the 100 total trials is an independent realisation.
-Trials in which either controller diverged ($\text{RMSE}>\SI{5}{\m}$,
-attributable to the tail of the disturbance distribution) are flagged
-as \emph{blow-ups} and excluded from the statistics under a paired rule
-(a trial is dropped if \emph{either} controller diverges, so both are
-evaluated on the same disturbance realisations), leaving $23/25$ valid
-trials on the figure-8 and $18/25$ on the more demanding vertical loop.
-We report the gate-crossing rate alongside the continuous metrics.
+\hlt{Trials in which either controller diverged
+(\mbox{$\text{RMSE}>\SI{5}{\m}$}, attributable to the tail of the
+disturbance distribution) are flagged as \mbox{\emph{blow-ups}} and
+excluded from the statistics under a paired rule (a trial is dropped if
+\mbox{\emph{either}} controller diverges, so both are evaluated on the
+same disturbance realisations), leaving \mbox{$23/25$} valid trials on
+the figure-8 and \mbox{$18/25$} on the more demanding vertical loop.
+We report the gate-crossing rate alongside the continuous metrics.}
 Table~\ref{tab:results} consolidates all four configurations with
 mean $\pm$ standard deviation over valid trials.
 
@@ -1080,6 +1091,7 @@ reference passed across it.
 Enriching the interface with the flatness output closes both the
 quantitative and the categorical gap with no additional compute.
 
+\hlpar{%
 Positioned against the cited literature, the proposed pipeline occupies
 a distinct point in the design space.
 Foehn~\textit{et~al.}~\cite{foehn2021time} pair a \pmm{} planner with
@@ -1103,7 +1115,7 @@ hold the reference structure fixed, whereas the present study
 performance.
 The result is a pipeline with the modularity of decomposed approaches
 and the reference completeness usually exclusive to fused ones, at no
-additional solver cost.
+additional solver cost.}
 
 Two limitations qualify the scope.
 The SiL experiment includes \mujoco{}'s random external-force

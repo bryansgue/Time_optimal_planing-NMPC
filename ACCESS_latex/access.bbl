@@ -66,6 +66,11 @@ C.~Qin, M.~S.~J. Michet, J.~Chen, and H.~H.-T. Liu, ``Time-optimal
   Int. Conf. Robot. Autom. (ICRA)}, 2024, pp. 14\,513--14\,519, best Paper
   Award on Unmanned Aerial Vehicles.
 
+\bibitem{zhou2023timeoptimal}
+Z.~Zhou, G.~Wang, J.~Sun, J.~Wang, and J.~Chen, ``Efficient and robust
+  time-optimal trajectory planning and control for agile quadrotor flight,''
+  \emph{IEEE Robotics and Automation Letters}, 2023.
+
 \bibitem{penicka2022minimum}
 R.~Penicka, Y.~Song, E.~Kaufmann, and D.~Scaramuzza, ``Minimum-time quadrotor
   waypoint flight in cluttered environments,'' in \emph{IEEE Robot. Autom.

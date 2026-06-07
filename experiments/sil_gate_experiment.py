@@ -259,9 +259,21 @@ def main():
         else:
             results[f'trial_{trial}'] = trial_results
 
-    save_path = os.path.join(_RESULTS_DIR, f'sil_gate_results_{_CIRCUIT}.npy')
-    np.save(save_path, results, allow_pickle=True)
-    print(f'\nSiL results saved → {save_path}')
+    # Saving guard: SAVE=0 skips saving (pure recording/video runs);
+    # OUT_TAG appends a suffix; an existing file is never clobbered unless
+    # OVERWRITE=1 (otherwise a timestamp is appended).
+    if os.environ.get('SAVE', '1') == '0':
+        print('\n[SAVE=0] results NOT written (paper data protected)')
+    else:
+        tag = os.environ.get('OUT_TAG', '')
+        save_path = os.path.join(_RESULTS_DIR,
+                                 f'sil_gate_results_{_CIRCUIT}{tag}.npy')
+        if os.path.exists(save_path) and os.environ.get('OVERWRITE', '0') != '1':
+            import time as _t
+            save_path = save_path.replace('.npy', f'_{int(_t.time())}.npy')
+            print(f'[guard] target existed; writing to a new file instead')
+        np.save(save_path, results, allow_pickle=True)
+        print(f'\nSiL results saved → {save_path}')
 
     muj.stop_pd_hold()
     muj.stop()
